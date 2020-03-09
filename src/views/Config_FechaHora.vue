@@ -1,0 +1,238 @@
+<template>
+    <v-row align="center" justify="center">
+        <v-col cols="12" sm="10" lg="8">
+            <v-card flat>
+                <v-toolbar flat>
+                    <v-toolbar-title>Configuracion de fecha y hora</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                </v-toolbar>
+                <v-divider></v-divider>
+                <v-card-text>
+                    <v-alert
+                        outlined
+                        type="success"
+                        text
+                        transition="scale-transition"
+                        :value="success"
+                        dismissible
+                        v-model="success"
+                    >
+                    Cambios realizados correctamente!
+                    </v-alert>
+                    <v-alert
+                        outlined
+                        type="error"
+                        text
+                        transition="scale-transition"
+                        :value="error"
+                        dismissible
+                        v-model="error"
+                    >
+                    Error al guardar los datos. No se recibió respuesta.
+                    </v-alert>
+                    <v-form>
+                        <v-row>
+                            <v-col cols="12">
+                                <v-text-field
+                                    readonly
+                                    v-model="datenow"
+                                    label="Fecha y hora actual"
+                                    required
+                                    filled
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row align="center">
+                            <v-col cols="8">
+                                <v-input
+                                    :messages="['Comprueba la fecha y hora actual contra un servicio ntp de internet']"
+                                >
+                                    Habilitar el servicio NTP
+                                </v-input>
+                            </v-col>
+                            <v-col cols="4" class="text-right" >
+                                <v-switch v-model="ntpEnabled" flat inset></v-switch>
+                            </v-col>
+                        </v-row>
+                        <v-row v-bind:class="{ 'd-none': !ntpEnabled }">
+                            <v-col cols="12">
+                                <v-text-field
+                                    v-model="ntpServername"
+                                    :counter="30"
+                                    label="Servidor NTP"
+                                    hint = "Por defecto: pool.ntp.org"
+                                    persistent-hint
+                                    required
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-text-field
+                                    v-model="timezoneSeconds"
+                                    label="Diferencia horaria"
+                                    hint = "Diferencia horario expresada en segundos. Por ejemplo, GMT+1 es 3600"
+                                    persistent-hint
+                                    required
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <v-row v-bind:class="{ 'd-none': ntpEnabled }">
+                            <v-col cols="12">
+                                <v-menu
+                                v-model="menu2"
+                                :close-on-content-click="false"
+                                :nudge-right="40"
+                                transition="scale-transition"
+                                offset-y
+                                min-width="290px"
+                                >
+                                    <template v-slot:activator="{ on }">
+                                        <v-text-field
+                                        v-model="newDate"
+                                        label="Nueva fecha"
+                                        readonly
+                                        v-on="on"
+                                        ></v-text-field>
+                                    </template>
+                                    <v-date-picker v-model="newDate" @input="menu2 = false"></v-date-picker>
+                                </v-menu>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-dialog
+                                ref="dialog"
+                                v-model="modal2"
+                                :return-value.sync="time"
+                                persistent
+                                width="290px"
+                                >
+                                <template v-slot:activator="{ on }">
+                                    <v-text-field
+                                    v-model="time"
+                                    label="Nueva Hora"
+                                    readonly
+                                    v-on="on"
+                                    ></v-text-field>
+                                </template>
+                                <v-time-picker
+                                    v-if="modal2"
+                                    v-model="time"
+                                    full-width
+                                >
+                                    <v-spacer></v-spacer>
+                                    <v-btn text color="primary" @click="modal2 = false">Cancel</v-btn>
+                                    <v-btn text color="primary" @click="$refs.dialog.save(time)">OK</v-btn>
+                                </v-time-picker>
+                                </v-dialog>
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn large color="primary" v-on:click="save()">Guardar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-col>
+    </v-row>
+</template>
+
+<script>
+export default {
+  name: 'Config_FechaHora',
+  data: () => ({
+        server: '', //'http://192.168.1.156/',
+        datenow: '1970-01-01',
+        rtcDate: null,
+        newDate:  new Date().toISOString().substr(0, 10),
+        modal: false,
+        modal2: false,
+        menu2: false,
+        time: '', //new Date().getHours().toString().padStart(2,"0") + ":"+new Date().getMinutes().toString().padStart(2,"0"),
+        timeoutTime: null,
+        ntpEnabled: true,
+        timezoneSeconds: 3600,
+        success: false,
+        error: false,
+        ntpServername: '',
+    }),
+    methods: {
+        updateTime() {
+
+            var self = this;
+            clearTimeout(this.timeoutTime);
+
+            if (this.rtcDate != null)
+            {
+                this.rtcDate.setSeconds(this.rtcDate.getSeconds() + 1);
+
+                var day = this.rtcDate.getDate().toString().padStart(2,"0");
+                var month = (this.rtcDate.getMonth()+1).toString().padStart(2,"0");
+                var year = this.rtcDate.getFullYear().toString();
+                var hour = this.rtcDate.getHours().toString().padStart(2,"0");
+                var minute = this.rtcDate.getMinutes().toString().padStart(2,"0");
+
+                this.datenow = day + "/" + month + "/" + year + " " + hour + ":" + minute;
+            }
+
+            this.timeoutTime = setTimeout(self.updateTime, 1000)
+        },
+        save()
+        {
+            var obj = {}
+            if (this.ntpEnabled)
+            {
+                obj = {
+                    enabled: true,
+                    servername: this.ntpServername,
+                    timezoneOffset: this.timezoneSeconds
+                };
+            }
+            else
+            {
+                var hour = this.time.split(":")[0];
+                var minute = this.time.split(":")[1];
+                var mes = this.newDate.split("-")[1] - 1;
+
+                var unixtime = Date.UTC(this.newDate.split("-")[0], mes, this.newDate.split("-")[2], hour, minute,0,0);
+                
+                obj = {
+                    enabled: false,
+                    unixtime: unixtime / 1000
+                }
+            }
+            
+            var self = this;
+            this.$http.post(this.server + 'rtc', obj
+            ).then(function(/* response */){ 
+                console.log("Fecha cambiada correctamente!");
+                self.requestInfo();
+                self.success = true;
+            }, function(){
+                self.requestInfo();
+                self.error = true;
+            });
+        },
+        requestInfo()
+        {
+            var self = this;
+
+            self.error = false;
+            self.success = false;
+
+            this.$http.get(this.server + 'rtc').then(function(response){
+                console.log(response.body);
+                self.ntpEnabled = response.body["enabled"];
+                self.timezoneSeconds = response.body["timezoneOffset"];
+                self.ntpServername = response.body["servername"];
+                self.rtcDate = new Date(parseInt(response.body["unixtime"]) * 1000);
+                self.updateTime();
+            }, function(){
+                self.error = true;
+            });
+        },
+    },
+    created: function(){
+        this.requestInfo();
+    }
+}
+</script>
