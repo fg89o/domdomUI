@@ -67,10 +67,14 @@
                             <v-col cols="12">
                                 <v-text-field
                                     v-model="pwd"
+                                    :append-icon="showPwd ? 'mdi-eye' : 'mdi-eye-off'"
+                                    :type="showPwd ? 'text' : 'password'"
+                                    class="input-group--focused"
                                     label="Password"
                                     persistent-hint
                                     required
                                     :counter="64"
+                                    @click:append="showPwd = !showPwd"
                                 ></v-text-field>
                             </v-col>
                         </v-row>
@@ -119,6 +123,7 @@
 export default {
   name: 'Config_Red',
   data: () => ({
+      showPwd: false,
       success: false,
       error: false,
       mDNSEnabled: false,
@@ -146,6 +151,32 @@ export default {
                 }
             }, function(){
 
+                self.error = true;
+            });
+        },
+        saveInfo()
+        {
+            var self = this;
+
+            self.error = false;
+            self.success = false;
+
+            var obj = 
+            {
+                mdns_enabled: self.mDNSEnabled,
+                mdns_hostname: self.mDNSHostname,
+                sta_enabled: self.wifiEnabled,
+                ssid: self.wifiEnabled ? self.ssid : "",
+                pwd: self.wifiEnabled ? self.pwd : "",
+            };
+
+            this.$http.post('red', obj
+            ).then(function(/* response */){ 
+                console.log("Cambios gaurdados correctamente!");
+                self.getInfo();
+                self.success = true;
+            }, function(){
+                self.getInfo();
                 self.error = true;
             });
         }
