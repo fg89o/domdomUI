@@ -42,34 +42,6 @@
                         <v-row align="center">
                             <v-col cols="8">
                                 <v-input
-                                    :messages="['Permite acceder al equipo utilizando el nombre .local']"
-                                    dense
-                                >
-                                    Habilitar servicio mDNS
-                                </v-input>
-                            </v-col>
-                            <v-col cols="4" class="text-right" >
-                                <v-switch v-model="mDNSEnabled" flat inset dense></v-switch>
-                            </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col cols="12">
-                                <v-text-field
-                                    v-model="mDNSHostname"
-                                    :counter="32"
-                                    label="Nombre de host"
-                                    hint = "Nombre para el servicio mDNS sin el sufijo .local"
-                                    persistent-hint
-                                    required
-                                ></v-text-field>
-                            </v-col>
-                        </v-row>
-                    </v-form>
-                    <v-divider></v-divider>
-                    <v-form>
-                        <v-row align="center">
-                            <v-col cols="8">
-                                <v-input
                                     :messages="['Intenta la conexión con un SSID existente']"
                                     dense
                                 >
@@ -77,6 +49,7 @@
                                 </v-input>
                             </v-col>
                             <v-col cols="4" class="text-right" >
+                                <v-spacer></v-spacer>
                                 <v-switch v-model="wifiEnabled" flat inset dense></v-switch>
                             </v-col>
                         </v-row>
@@ -98,6 +71,35 @@
                                     persistent-hint
                                     required
                                     :counter="64"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                    <v-divider></v-divider>
+                    <v-form>
+                        <v-row align="center">
+                            <v-col cols="8">
+                                <v-input
+                                    :messages="['Permite acceder al equipo utilizando el nombre .local']"
+                                    dense
+                                >
+                                    Habilitar servicio mDNS
+                                </v-input>
+                            </v-col>
+                            <v-col cols="4" class="text-right" >
+                                <v-spacer></v-spacer>
+                                <v-switch v-model="mDNSEnabled" flat inset dense></v-switch>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12">
+                                <v-text-field
+                                    v-model="mDNSHostname"
+                                    :counter="32"
+                                    label="Nombre de host"
+                                    hint = "Nombre para el servicio mDNS sin el sufijo .local"
+                                    persistent-hint
+                                    required
                                 ></v-text-field>
                             </v-col>
                         </v-row>
@@ -133,7 +135,7 @@ export default {
             self.error = false;
             self.success = false;
 
-            this.$http.get(this.server + 'red').then(function(response){
+            this.$http.get('red').then(function(response){
                 console.log(response.body);
                 self.mDNSEnabled = response.body["mdns_enabled"];
                 self.mDNSHostname = response.body["mdns_hostname"];
@@ -143,6 +145,7 @@ export default {
                     self.ssid = response.body["ssid"];
                 }
             }, function(){
+
                 self.error = true;
             });
         }
