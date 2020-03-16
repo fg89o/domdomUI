@@ -88,8 +88,9 @@ export default {
         {
           text: 'CONFIGURACION',
           items: [
+            { title: 'Canales', icon: 'mdi-camera-iris', link: '/canales'},
             { title: 'Fecha y hora', icon: 'mdi-clock', link: '/fechaHora' },
-             { title: 'Red / Wifi', icon: 'mdi-lan', link: '/red' },
+            { title: 'Red / Wifi', icon: 'mdi-lan', link: '/red' },
           ]
         },
     ],

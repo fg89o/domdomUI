@@ -28,6 +28,11 @@ const routes = [
     name: 'Red',
     component : () => import('../views/Config_Red.vue')
   },
+  {
+    path: '/canales',
+    name: 'Canales',
+    component : () => import('../views/Config_Canales.vue')
+  },
 ]
 
 const router = new VueRouter({

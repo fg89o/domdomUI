@@ -1,35 +1,39 @@
 <template>
     <v-row align="center" justify="center">
         <v-col cols="12" sm="10" lg="8">
-            <v-card flat>
-                <v-toolbar flat>
+            <p class="my-4 text-uppercase font-weight-light overline">Configuración > Fecha/Hora</p>
+            <v-divider></v-divider>
+            <h4 class="my-2">Opciones relacionadas con la configuración de fecha y hora</h4>
+            <v-divider></v-divider>
+            <v-alert
+                outlined
+                type="success"
+                text
+                transition="scale-transition"
+                :value="success"
+                dismissible
+                v-model="success"
+            >
+            Cambios realizados correctamente!
+            </v-alert>
+            <v-alert
+                outlined
+                type="error"
+                text
+                transition="scale-transition"
+                :value="error"
+                dismissible
+                v-model="error"
+            >
+            Error al guardar los datos. No se recibió respuesta.
+            </v-alert>
+            <v-card outlined class="my-4">
+                <v-toolbar flat color="blue lighten-5">
                     <v-toolbar-title>Configuracion de fecha y hora</v-toolbar-title>
                     <v-spacer></v-spacer>
                 </v-toolbar>
                 <v-divider></v-divider>
                 <v-card-text>
-                    <v-alert
-                        outlined
-                        type="success"
-                        text
-                        transition="scale-transition"
-                        :value="success"
-                        dismissible
-                        v-model="success"
-                    >
-                    Cambios realizados correctamente!
-                    </v-alert>
-                    <v-alert
-                        outlined
-                        type="error"
-                        text
-                        transition="scale-transition"
-                        :value="error"
-                        dismissible
-                        v-model="error"
-                    >
-                    Error al guardar los datos. No se recibió respuesta.
-                    </v-alert>
                     <v-form>
                         <v-row>
                             <v-col cols="12">
@@ -50,7 +54,7 @@
                                     Habilitar el servicio NTP
                                 </v-input>
                             </v-col>
-                            <v-col cols="4" class="text-right" >
+                            <v-col cols="4" class="d-flex justify-end" >
                                 <v-switch v-model="ntpEnabled" flat inset></v-switch>
                             </v-col>
                         </v-row>
