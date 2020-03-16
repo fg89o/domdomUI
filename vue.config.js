@@ -1,6 +1,7 @@
 const CompressionWebpackPlugin  = require('compression-webpack-plugin');
 
 module.exports = {
+  productionSourceMap: false,
   "transpileDependencies": [
     "vuetify"
   ],
@@ -25,7 +26,6 @@ module.exports = {
   // outputDir: process.env.NODE_ENV === 'production'
   //   ? '../../data'
   //   : 'dist',
-  // productionSourceMap: process.env.NODE_ENV !== 'production' ,
   css: {
     extract: false,
   },

@@ -3,7 +3,85 @@
         <v-col cols="12" sm="10" lg="8">
             <v-card flat>
                 <v-toolbar flat>
-                    <v-toolbar-title>Configuracion de red</v-toolbar-title>
+                    <v-toolbar-title>Configuración actual</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                </v-toolbar>
+                <v-divider></v-divider>
+                <v-card-text>
+                    <v-form>
+                        <v-row>
+                            <v-col cols="12">
+                                <v-text-field
+                                    readonly
+                                    v-model="current_ssid"
+                                    label="SSID actual:"
+                                    required
+                                    filled
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field
+                                    readonly
+                                    v-model="mode"
+                                    label="Modo"
+                                    required
+                                    filled
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field
+                                    readonly
+                                    v-model="current_canal"
+                                    label="Canal"
+                                    required
+                                    filled
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="4">
+                                <v-text-field
+                                    readonly
+                                    v-model="current_potencia"
+                                    label="Potencia"
+                                    required
+                                    filled
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-text-field
+                                    readonly
+                                    v-model="current_ip"
+                                    label="IP local:"
+                                    required
+                                    filled
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-text-field
+                                    readonly
+                                    v-model="current_gateway"
+                                    label="Puerta de enlace:"
+                                    required
+                                    filled
+                                ></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-text-field
+                                    readonly
+                                    v-model="current_dns"
+                                    label="DNS:"
+                                    required
+                                    filled
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+                <v-card-actions>
+                </v-card-actions>
+            </v-card>
+            <v-card flat>
+                <v-toolbar flat>
+                    <v-toolbar-title>Nueva configuracion</v-toolbar-title>
                     <v-spacer></v-spacer>
                 </v-toolbar>
                 <v-divider></v-divider>
@@ -62,6 +140,7 @@
                                     hint = "Red wifi a la que se intentará la conexión"
                                     persistent-hint
                                     required
+                                    v-show="wifiEnabled"
                                 ></v-text-field>
                             </v-col>
                             <v-col cols="12">
@@ -75,6 +154,7 @@
                                     required
                                     :counter="64"
                                     @click:append="showPwd = !showPwd"
+                                    v-show="wifiEnabled"
                                 ></v-text-field>
                             </v-col>
                         </v-row>
@@ -104,6 +184,7 @@
                                     hint = "Nombre para el servicio mDNS sin el sufijo .local"
                                     persistent-hint
                                     required
+                                    v-show="mDNSEnabled"
                                 ></v-text-field>
                             </v-col>
                         </v-row>
@@ -112,7 +193,7 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn large color="primary" v-on:click="save()">Guardar</v-btn>
+                <v-btn large color="primary" v-on:click="saveInfo()">Guardar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-col>
@@ -130,7 +211,14 @@ export default {
       mDNSHostname: '',
       ssid: '',
       pwd: '',
-      wifiEnabled: false
+      wifiEnabled: false,
+      current_ssid: '',
+      current_canal: '',
+      current_potencia: '',
+      current_dns: '',
+      current_gateway: '',
+      current_ip: '',
+      mode: ''
     }),
     methods: {
         getInfo()
@@ -144,11 +232,15 @@ export default {
                 console.log(response.body);
                 self.mDNSEnabled = response.body["mdns_enabled"];
                 self.mDNSHostname = response.body["mdns_hostname"];
+                self.mode = response.body["mode"];
                 self.wifiEnabled = response.body["sta_enabled"];
-                if (self.wifiEnabled)
-                {
-                    self.ssid = response.body["ssid"];
-                }
+                
+                self.current_ssid = response.body["ssid"];
+                self.current_canal = response.body["current_channel"];
+                self.current_potencia = response.body["rssi"];
+                self.current_ip = response.body["current_ip"];
+                self.current_gateway = response.body["current_gateway"];
+                self.current_dns = response.body["current_dns"];
             }, function(){
 
                 self.error = true;
