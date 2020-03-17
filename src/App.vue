@@ -82,7 +82,7 @@ export default {
           text: 'GENERAL',
           items: [
             { title: 'Inicio', icon: 'mdi-view-dashboard', link: '/' },
-            { title: 'Manual', icon: 'mdi-clock', link: '/manual' },
+            { title: 'Manual', icon: 'mdi-tune', link: '/manual' },
           ]
         },
         {
@@ -91,6 +91,7 @@ export default {
             { title: 'Canales', icon: 'mdi-camera-iris', link: '/canales'},
             { title: 'Fecha y hora', icon: 'mdi-clock', link: '/fechaHora' },
             { title: 'Red / Wifi', icon: 'mdi-lan', link: '/red' },
+            { title: 'Reset', icon: 'mdi-restart', link: '/reset' },
           ]
         },
     ],

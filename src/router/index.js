@@ -33,6 +33,12 @@ const routes = [
     name: 'Canales',
     component : () => import('../views/Config_Canales.vue')
   },
+  {
+    path: '/reset',
+    name: 'Reset',
+    component : () => import('../views/Config_Reset.vue')
+  },
+
 ]
 
 const router = new VueRouter({
