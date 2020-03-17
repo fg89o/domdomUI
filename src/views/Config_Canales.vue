@@ -1,0 +1,172 @@
+<template>
+  <v-row align="center" justify="center">
+    <v-col cols="12" sm="10" lg="8">
+      <p class="my-4 px-4 text-uppercase font-weight-light overline">Configuración > Canales</p>
+      <v-divider></v-divider>
+      <h4 class="my-2 px-4">Opciones relacionadas con la configuración de canales</h4>
+      <v-divider></v-divider>
+      <v-alert
+          outlined
+          type="success"
+          text
+          transition="scale-transition"
+          :value="success"
+          dismissible
+          v-model="success"
+      >
+      Cambios realizados correctamente!
+      </v-alert>
+      <v-alert
+          outlined
+          type="error"
+          text
+          transition="scale-transition"
+          :value="error"
+          dismissible
+          v-model="error"
+      >
+      Error al guardar los datos. No se recibió respuesta.
+      </v-alert>
+      <div v-if="loading">
+        <v-skeleton-loader v-for="(sk, i) in 5" :key="i"
+          type="list-item-two-line"
+          class="mx-auto"
+      ></v-skeleton-loader>
+      </div>
+      <v-expansion-panels inset class="my-4">
+        <v-expansion-panel
+          v-for="(item,i) in canales"
+          :key="i"
+        >
+          <v-expansion-panel-header>Canal {{item.channel_num + 1}}</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-row>
+              <v-col cols="8">
+                <v-input
+                    :messages="['Si el canal está deshabilitdo los leds estarán apagados y no se usará en la programación']"
+                >
+                    Habilitar canal
+                </v-input>
+              </v-col>
+              <v-col cols="4" class="d-flex justify-end" >
+                  <v-switch v-model="item.enabled" flat inset></v-switch>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="6" sm="3">
+                <v-text-field
+                    v-model="item.resolution"
+                    label="Resolución"
+                    readonly
+                    dense
+                ></v-text-field>
+              </v-col>
+              <v-col cols="6" sm="3">
+                <v-text-field
+                    v-model="item.current_pwm"
+                    label="Valor PWM actual"
+                    readonly
+                    dense
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" class="py-0">
+                <v-subheader>Rango PWM</v-subheader>
+                <v-range-slider
+                  v-model="item.range"
+                  :max="Math.pow(2,item.resolution)"
+                  :min="0"
+                  hide-details
+                  class="align-center"
+                >
+                  <template v-slot:prepend>
+                    <v-text-field
+                      :value="item.range[0]"
+                      class="mt-0 pt-0"
+                      hide-details
+                      single-line
+                      type="number"
+                      style="width: 60px"
+                      @change="$set(range, 0, $event)"
+                    ></v-text-field>
+                  </template>
+                  <template v-slot:append>
+                    <v-text-field
+                      :value="item.range[1]"
+                      class="mt-0 pt-0"
+                      hide-details
+                      single-line
+                      type="number"
+                      style="width: 60px"
+                      @change="$set(range, 1, $event)"
+                    ></v-text-field>
+                  </template>
+                </v-range-slider>
+              </v-col>
+            </v-row>
+            <p class="my-4 px-4 body-2">
+              Cambie el valor máximo y mínimo del PWM para variar el brillo máximo y mínimo de cada canal. Este valor es el más restrictivo de toda la aplicación.
+            </p>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+      <v-spacer></v-spacer>
+      <v-btn large color="primary" v-on:click="save()">Guardar todo</v-btn>
+    </v-col>
+  </v-row>
+</template>
+<script>
+export default {
+  name: 'Config_Canales',
+  data: () => ({
+        canales: [],
+        loading: true,
+        success: false,
+        error: false
+    }),
+    methods: {
+      getInfo()
+      {
+        var self = this;
+
+        this.$http.get('canales').then(function(response){
+          self.canales = response.body["canales"];
+          for(var i = 0; i < self.canales.length; i++)
+          {
+            self.canales[i]["range"] = [self.canales[i].min_pwm, self.canales[i].max_pwm];
+          }
+          self.loading = false;
+        }, function(){
+            self.error = true;
+            self.loading = false;
+        });
+      },
+      save()
+      {
+        var self = this;
+        self.success = false;
+        self.error = false;
+
+        for (var i = 0; i < self.canales.length; i++)
+        {
+          self.canales[i].min_pwm = self.canales[i].range[0];
+          self.canales[i].max_pwm = self.canales[i].range[1];
+        }
+
+        var obj = {
+          canales: self.canales
+        }
+
+        this.$http.post('canales', obj).then(function(/* response */){
+          self.success = true;
+        }, function(){
+            self.error = true;
+        });
+      }
+    },
+    created: function(){
+      this.getInfo();
+    }
+}
+</script>
