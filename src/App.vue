@@ -83,6 +83,7 @@ export default {
           items: [
             { title: 'Inicio', icon: 'mdi-view-dashboard', link: '/' },
             { title: 'Manual', icon: 'mdi-tune', link: '/manual' },
+            { title: 'Ventilador', icon: 'mdi-fan', link: '/fan' },
           ]
         },
         {

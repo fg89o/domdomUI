@@ -6,15 +6,13 @@ module.exports = {
     "vuetify"
   ],
   configureWebpack: {
-  //   plugins: process.env.NODE_ENV === 'production' 
-  //     ? []
-  //     : [
-  //     new CompressionWebpackPlugin({
-  //       cache: false,
-  //       algorithm: 'gzip',
-  //       deleteOriginalAssets: true,
-  //     }),
-  //   ],
+    plugins: [
+      new CompressionWebpackPlugin({
+        cache: false,
+        algorithm: 'gzip',
+        deleteOriginalAssets: true,
+      }),
+    ],
     output:{
       filename: '[name].[hash:4].js',
       chunkFilename: '[name].[hash:4].js'

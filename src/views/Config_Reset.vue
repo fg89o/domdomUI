@@ -34,7 +34,7 @@
       >
       Al reiniciar el equipo se cargará la configuración guardada en memoria. Todos los cambios no guardados se perderán. ¿ Está seguro que desea reiniciar el equipo?
       </v-alert>
-      <div class="d-flex justify-end">
+      <div class="d-flex justify-center">
         <v-btn v-if="!success" large color="error" v-on:click="reset()">Reiniciar ahora</v-btn>
       </div>
     </v-col>

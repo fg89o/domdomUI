@@ -105,7 +105,7 @@
                 </v-range-slider>
               </v-col>
             </v-row>
-            <p class="my-4 px-4 body-2">
+            <p class="my-4 px-4 overline">
               Cambie el valor máximo y mínimo del PWM para variar el brillo máximo y mínimo de cada canal. Este valor es el más restrictivo de toda la aplicación.
             </p>
           </v-expansion-panel-content>

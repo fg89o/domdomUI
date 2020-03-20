@@ -38,7 +38,16 @@ const routes = [
     name: 'Reset',
     component : () => import('../views/Config_Reset.vue')
   },
-
+  {
+    path: '/manual',
+    name: 'Manual',
+    component : () => import('../views/Adj_Manual.vue')
+  },
+  {
+    path: '/fan',
+    name: 'Fan',
+    component : () => import('../views/Adj_Fan.vue')
+  },
 ]
 
 const router = new VueRouter({
