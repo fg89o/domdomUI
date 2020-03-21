@@ -10,7 +10,7 @@ module.exports = {
       new CompressionWebpackPlugin({
         cache: false,
         algorithm: 'gzip',
-        deleteOriginalAssets: true,
+        deleteOriginalAssets: process.env.NODE_ENV === 'production',
       }),
     ],
     output:{
