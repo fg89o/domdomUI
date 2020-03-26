@@ -104,10 +104,56 @@
                   </template>
                 </v-range-slider>
               </v-col>
-            </v-row>
-            <p class="my-4 px-4 overline">
+              <p class="my-4 px-4 overline">
               Cambie el valor máximo y mínimo del PWM para variar el brillo máximo y mínimo de cada canal. Este valor es el más restrictivo de toda la aplicación.
-            </p>
+              </p>
+            </v-row>
+            <v-row>
+              <v-col cols="12" class="py-0">
+                <v-row>
+                  <v-subheader>Config. Color</v-subheader>
+                  <v-spacer></v-spacer>
+                  <v-btn class="primary text">
+                    <v-icon
+                      @click="nuevo(i)"
+                    >
+                      mdi-plus
+                    </v-icon>
+                  </v-btn>
+                </v-row>
+                <v-row v-for="(led, j) in item.leds" :key="j">
+                  <v-col cols="4">
+                    <v-text-field
+                      v-model="led.K"
+                      label="Temperatura (K)"
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="3">
+                    <v-text-field
+                      v-model="led.nm"
+                      label="Long. de Onda (nm)"
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="3">
+                    <v-text-field
+                      v-model="led.W"
+                      label="Potencia (W)"
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="2">
+                    <v-btn outlined color="error" @click="borrar(i, j)">
+                      <v-icon>
+                        mdi-delete
+                      </v-icon>
+                    </v-btn>
+                  </v-col>
+                <v-divider></v-divider>
+                </v-row>
+              </v-col>
+            </v-row>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -126,6 +172,21 @@ export default {
         error: false
     }),
     methods: {
+      borrar( num, led)
+      {
+        console.log(num + " " + led);
+        this.canales[num].leds.splice(led,1);
+      },
+      nuevo( num )
+      {
+        var obj = {
+          K: 0,
+          nm: 0,
+          W: 0
+        };
+
+        this.canales[num].leds.push(obj);
+      },
       getInfo()
       {
         var self = this;
