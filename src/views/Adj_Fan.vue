@@ -1,5 +1,5 @@
 <template>
-
+<v-container>
   <v-row align="center" justify="center">
     <v-col cols="12" sm="10" lg="8">
       <p class="my-4 px-4 text-uppercase font-weight-light overline">Ajuste > Ventilador</p>
@@ -13,7 +13,7 @@
       ></v-skeleton-loader>
       </div>
       <v-row>
-        <v-col cols="12" sm="8" lg="6" class="d-flex justify-center">
+        <v-col cols="12" sm="8" lg="6" class="d-flex justify-center offset-lg-1">
           <canvas id="fan-chart"></canvas>
         </v-col>
         <v-col cols="12" sm="4" lg="4">
@@ -132,6 +132,7 @@
       </v-card-text>
     </v-col>
   </v-row>
+</v-container>
 </template>
 <script>
 import Chart from 'chart.js';
@@ -165,6 +166,7 @@ export default {
             display: false
           },
           responsive: true,
+          aspectRatio: 1,
           scales: {
             xAxes: [{
               scaleLabel: {
@@ -189,7 +191,7 @@ export default {
     request()
     {
       var self = this;
-      this.$http.get('fansettings').then(function(response)
+      this.$http.get(this.$remoteServer + 'fansettings').then(function(response)
       {
 
         self.modo_automatico = response.body["enabled"];
@@ -210,10 +212,11 @@ export default {
             datasets: [
               { // one line graph
                 data: [],
+                backgroundColor: 'rgba(179,212,252,0.3)',
                 lineTension: 0,  
                 borderWidth: 3,
                 borderColor: [
-                  '#47b784',
+                  '#1976d2',
                 ],
               }
             ]
@@ -283,7 +286,7 @@ export default {
         }
       }
 
-      this.$http.post('fansettings', obj).then(function( /* response */)
+      this.$http.post(this.$remoteServer + 'fansettings', obj).then(function( /* response */)
       {
         self.request();
       }, function(){

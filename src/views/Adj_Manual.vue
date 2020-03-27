@@ -1,4 +1,5 @@
 <template>
+<v-container>
   <v-row align="center" justify="center">
     <v-col cols="12" md="10" lg="10">
       <p class="my-4 px-4 text-uppercase font-weight-light overline">Ajuste > Canales</p>
@@ -38,7 +39,7 @@
               <v-col cols="12" sm="6" lg="6" v-for="(canal, i) in canales" :key="i">
                 <v-row>
                   <v-col cols="12" class="d-flex justify-space-between">
-                    <p class="mx-0 my-0" >Canal: {{i+1}}</p><p class="mx-0 my-0">{{canal.nuevo_porcentaje}}%</p>
+                    <p class="mx-0 my-0" >Canal: {{i+1}}</p><p class="mx-0 my-0">{{Math.round(canal.nuevo_porcentaje)}}%</p>
                   </v-col>
                   <v-col cols="12 py-0">
                     <v-slider
@@ -75,6 +76,7 @@
       </v-row>
     </v-col>
   </v-row>
+</v-container>
 </template>
 <script>
 // import Polynomial from "polynomial";
@@ -171,7 +173,7 @@ export default {
         canales: tmpCanales
       }
 
-      this.$http.post('canales', obj).then(function(/* response */)
+      this.$http.post(this.$remoteServer + 'canales', obj).then(function(/* response */)
       {
         self.success = true;
         setTimeout(()=>{
@@ -187,7 +189,7 @@ export default {
     request()
     {
       var self = this;
-      this.$http.get('canales').then(function(response)
+      this.$http.get(this.$remoteServer + 'canales').then(function(response)
       {
         self.modo_manual = !response.body["modo_programado"];
         self.canales = response.body["canales"];
@@ -240,6 +242,19 @@ export default {
       if (blancos.length > 0 || color.length > 0)
       {
         
+        var canvas = document.getElementById("espectro-chart");
+        const ctx = canvas.getContext("2d");
+        var gradient = ctx.createLinearGradient(0, 0, canvas.parentElement.offsetWidth, 0);
+        gradient.addColorStop(0, 'black');
+        gradient.addColorStop(.1, 'blue');
+        gradient.addColorStop(.3, 'blue');
+        gradient.addColorStop(.4, 'rgb(0,206,209)');
+        gradient.addColorStop(.45, 'rgb(0,255,0)');
+        gradient.addColorStop(.6, 'rgb(0,255,0)');
+        gradient.addColorStop(.7, 'yellow');
+        gradient.addColorStop(.75, 'orange');
+        gradient.addColorStop(.85, 'red');
+        gradient.addColorStop(1, 'black');
         var obj = {
           type: 'line',
           data: {
@@ -248,9 +263,10 @@ export default {
               { // one line graph
                 data: [],
                 lineTension: 0.3,  
-                borderWidth: 3,
+                backgroundColor: gradient,
+                borderWidth: 1,
                 borderColor: [
-                  '#47b784',
+                  'black',
                 ],
                 pointBackgroundColor: 'rgba(0,0,0,0)',
                 pointBorderColor: 'rgba(0,0,0,0)',
@@ -261,7 +277,6 @@ export default {
         }
 
         const p = this.polinomio(blancos,color,0);
-        console.log(p);
         const f = parse(p);
         const simplified = simplify(f);
         for (var z = 0; z <= 10; z += 0.1)

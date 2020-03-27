@@ -1,4 +1,5 @@
 <template>
+<v-container>
     <v-row align="center" justify="center">
         <v-col cols="12" sm="10" lg="8">
             <p class="my-4 text-uppercase font-weight-light overline">Configuración > Fecha/Hora</p>
@@ -138,13 +139,13 @@
             </v-card>
         </v-col>
     </v-row>
+</v-container>
 </template>
 
 <script>
 export default {
   name: 'Config_FechaHora',
   data: () => ({
-        server: '', //'http://192.168.1.156/',
         datenow: '1970-01-01',
         rtcDate: null,
         newDate:  new Date().toISOString().substr(0, 10),
@@ -206,7 +207,7 @@ export default {
             }
             
             var self = this;
-            this.$http.post(this.server + 'rtc', obj
+            this.$http.post(this.$remoteServer + 'rtc', obj
             ).then(function(/* response */){ 
                 console.log("Fecha cambiada correctamente!");
                 self.requestInfo();
@@ -223,7 +224,7 @@ export default {
             self.error = false;
             self.success = false;
 
-            this.$http.get(this.server + 'rtc').then(function(response){
+            this.$http.get(this.$remoteServer + 'rtc').then(function(response){
                 console.log(response.body);
                 self.ntpEnabled = response.body["enabled"];
                 self.timezoneSeconds = response.body["timezoneOffset"];

@@ -48,9 +48,14 @@
 
             <v-spacer></v-spacer>
     
-            <v-btn icon>
-            <v-icon>mdi-wrench</v-icon>
+            <v-btn icon target="_blank" href="https://github.com/fg89o/domdomUI">
+              <v-icon>mdi-github</v-icon>
             </v-btn>
+
+            <v-btn icon target="_blank" href="https://acuariofiliamadrid.org/Thread-%C4%91om-%C4%91%C3%B3m-Controlador-de-pantalla">
+              <v-icon>mdi-help-circle</v-icon>
+            </v-btn>
+
         </v-app-bar>
       
         <!-- Sizes your content based upon application components -->
@@ -68,7 +73,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'App',
 
@@ -98,6 +102,7 @@ export default {
     ],
     menu_items_active: '',
     right: null,
+    timeTimeout: null,
   }),
 
   methods: {
@@ -115,12 +120,20 @@ export default {
 
             this.datenow = day + "/" + month + "/" + year + " " + hour + ":" + minute;
         }
-        setTimeout(self.time, 1000)
+
+
+        this.timeTimeout = setTimeout(self.time, 1000)
     },
     requestTime(){
       var self = this;
       this.$http.get('rtc').then(function(response){
           self.date = new Date(parseInt(response.body["unixtime"])*1000);
+
+          if (self.timeTimeout != null)
+          {
+            window.clearTimeout(self.timeTimeout);
+          }
+
           self.time();
       }, function(){
           console.error("Error al recibir rtc!");

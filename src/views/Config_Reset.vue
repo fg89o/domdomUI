@@ -1,4 +1,5 @@
 <template>
+<v-container>
   <v-row align="center" justify="center">
     <v-col cols="12" sm="10" lg="8">
       <p class="my-4 px-4 text-uppercase font-weight-light overline">Configuración > Reset</p>
@@ -39,6 +40,7 @@
       </div>
     </v-col>
   </v-row>
+</v-container>
 </template>
 <script>
 export default {
@@ -54,7 +56,7 @@ export default {
         var obj = {
           reset: true
         }
-        this.$http.post('reset', obj).then(function(/* response */){
+        this.$http.post(this.$remoteServer + 'reset', obj).then(function(/* response */){
           self.success = true;
         }, function(){
             self.error = true;
