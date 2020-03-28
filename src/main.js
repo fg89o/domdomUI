@@ -8,15 +8,13 @@ Vue.use(VueResource);
 
 Vue.config.productionTip = false
 
-//Vue.prototype.$remoteServer = 'http://192.168.1.156/';
-Vue.prototype.$remoteServer = '';
+//Vue.prototype.$remoteServer = '';
+Vue.prototype.$remoteServer = 'http://192.168.1.156/';
 
 new Vue({
   router,
   vuetify,
   render: h => h(App),
   data: {
-    // En desarollo poner la direccion asignada al equipo. Para produccion dejar en blanco
-    //$remoteServer: 'http://192.168.1.156/'
   }
 }).$mount('#app')

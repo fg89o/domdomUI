@@ -39,21 +39,23 @@
               <v-col cols="12" sm="6" lg="6" v-for="(canal, i) in canales" :key="i">
                 <v-row>
                   <v-col cols="12" class="d-flex justify-space-between">
-                    <p class="mx-0 my-0" >Canal: {{i+1}}</p><p class="mx-0 my-0">{{Math.round(canal.nuevo_porcentaje)}}%</p>
+                    <p class="mx-0 my-0" >Canal: {{i+1}}</p>
+                    <span
+                      class=""
+                      v-text="porcentaje[i] +'%'"
+                    ></span>
                   </v-col>
                   <v-col cols="12 py-0">
                     <v-slider
-                      v-model="canal.nuevo_porcentaje"
+                      v-model="porcentaje[i]"
                       track-color="grey"
-                      always-dirty
                       min="0"
                       max="100"
-                      @change="send()"
                       :disabled="!canal.enabled"
+                      always-dirty
                     >
                       <template v-slot:prepend>
                         <v-icon
-                          @click="decrement(i)"
                         >
                           mdi-minus
                         </v-icon>
@@ -61,7 +63,6 @@
               
                       <template v-slot:append>
                         <v-icon
-                          @click="increment(i)"
                         >
                           mdi-plus
                         </v-icon>
@@ -86,10 +87,11 @@ import Chart from "chart.js";
 export default {
   name: 'Adj_Manual',
   data: () => ({
-      canales: [{},{}],
+      canales: [],
       modo_manual: false,
-      loading: true
-    }),
+      loading: true,
+      porcentaje: [],
+  }),
   methods: {
     createChart(chartId, chartData) {
       const ctx = document.getElementById(chartId);
@@ -139,13 +141,13 @@ export default {
         }
       });
     },
-    decrement( num )
+    decrement()
     {
-      this.canales[num].nuevo_porcentaje -= 5;
+      this.porcentaje[0]--;
     },
-    increment( num )
+    increment()
     {
-      this.canales[num].nuevo_porcentaje += 5;
+      this.porcentaje[0]++;
     },
     send()
     {
@@ -157,13 +159,14 @@ export default {
       var tmpCanales = [];
       for(var i = 0; i < self.canales.length; i++)
       {
-        if (self.canales[i].nuevo_porcentaje != self.canales[i].porcentaje)
+
+        if (self.porcentaje[i] != self.canales[i].porcentaje)
         {
           var rango = self.canales[i].max_pwm - self.canales[i].min_pwm;
-          var valor = self.canales[i].min_pwm + (rango * self.canales[i].nuevo_porcentaje / 100);
+          var valor = self.canales[i].min_pwm + (rango * self.porcentaje[i] / 100);
           self.canales[i].current_pwm = valor;
 
-          self.canales[i].porcentaje = self.canales[i].nuevo_porcentaje;
+          self.canales[i].porcentaje = self.porcentaje[i];
           tmpCanales.push(self.canales[i]);
         }
       }
@@ -189,19 +192,21 @@ export default {
     request()
     {
       var self = this;
+      
       this.$http.get(this.$remoteServer + 'canales').then(function(response)
       {
         self.modo_manual = !response.body["modo_programado"];
         self.canales = response.body["canales"];
+        self.porcentaje = [];
 
         for (var i = 0; i < self.canales.length; i++)
         {
           var rango = self.canales[i].max_pwm - self.canales[i].min_pwm;
           var valor = self.canales[i].current_pwm - self.canales[i].min_pwm;
 
-          self.canales[i].porcentaje = valor * 100 / rango;
+          self.canales[i].porcentaje = Math.round(valor * 100 / rango);
 
-          self.canales[i].nuevo_porcentaje = self.canales[i].porcentaje;
+          self.porcentaje.push(self.canales[i].porcentaje);
         }
 
         this.updateChart();

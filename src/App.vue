@@ -86,6 +86,7 @@ export default {
           text: 'GENERAL',
           items: [
             { title: 'Inicio', icon: 'mdi-view-dashboard', link: '/' },
+            { title: 'Programación', icon: 'mdi-clock-outline', link: '/programacion' },
             { title: 'Manual', icon: 'mdi-tune', link: '/manual' },
             { title: 'Ventilador', icon: 'mdi-fan', link: '/fan' },
           ]
@@ -126,7 +127,7 @@ export default {
     },
     requestTime(){
       var self = this;
-      this.$http.get('rtc').then(function(response){
+      this.$http.get(this.$remoteServer + 'rtc').then(function(response){
           self.date = new Date(parseInt(response.body["unixtime"])*1000);
 
           if (self.timeTimeout != null)

@@ -48,6 +48,11 @@ const routes = [
     name: 'Fan',
     component : () => import('../views/Adj_Fan.vue')
   },
+  {
+    path: '/programacion',
+    name: 'Programacion',
+    component : () => import('../views/Adj_Programacion.vue')
+  },
 ]
 
 const router = new VueRouter({
