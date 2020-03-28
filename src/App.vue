@@ -1,17 +1,18 @@
 <template>
   <div id="app">
     <v-app>
-        <v-navigation-drawer v-model="drawer" enable-resize-watcher app clipped>
-          <v-list-item>
-              <v-list-item-content>
-                  <v-list-item-title class="title">
-                  Menu principal
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                  v1.0
-                  </v-list-item-subtitle>
-              </v-list-item-content>
-          </v-list-item>
+        <v-navigation-drawer v-model="drawer" enable-resize-watcher app>
+          <v-list class="text-center d-flex flex-column justify-center">
+            <v-list-item-text>
+              <h1><span class="blue--text">Dom</span>Dom</h1>
+            </v-list-item-text>
+            <v-list-item-avatar size="64" class="d-block">
+              <v-img src="https://drive.google.com/file/d/1FeSEeLYX4gRgx4bUL_OrPKrFJBr6ll_I"></v-img>
+            </v-list-item-avatar>
+            <v-list-item-text>
+              <span class="overline">menu principal</span>
+            </v-list-item-text>
+          </v-list>
   
           <v-divider></v-divider>
   
@@ -41,10 +42,8 @@
             </v-list-item-group>
           </v-list>
         </v-navigation-drawer>
-        <v-app-bar app clipped-left color="blue darken-4" dense dark >
+        <v-app-bar app color="rgb(51,51,51)" dense dark flat >
             <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      
-            <v-toolbar-title>{{appTitle}}</v-toolbar-title>
 
             <v-spacer></v-spacer>
     
@@ -59,7 +58,7 @@
         </v-app-bar>
       
         <!-- Sizes your content based upon application components -->
-        <v-content>
+        <v-content style="background-image: linear-gradient(to bottom, #f5f5f5 0%, white 100%);">
           <router-view></router-view>
         </v-content>
       

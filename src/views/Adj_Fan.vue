@@ -1,7 +1,23 @@
 <template>
-<v-container>
+<v-container style="max-width: 100%">
+  <v-row dark style="background-color: rgb(51,51,51); margin-top: -12px; padding-bottom: 60px">
+    <v-col cols="12"
+    >
+      <h3 dark style="color: white">VENTILACIÓN</h3>
+    </v-col>
+  </v-row>
   <v-row align="center" justify="center">
-    <v-col cols="12" sm="10" lg="8">
+    <v-col cols="12" sm="10" lg="8"
+      style="
+        padding-top: 0px;
+        margin-top: -50px;
+        background-color: white;
+        border-radius: 5px;
+        border: 1px solid transparent;
+        border-image: linear-gradient(to bottom, rgb(51,51,51) 0%, rgba(255,255,255,0) 50%);
+        border-image-slice: 1;
+      "
+    >
       <p class="my-4 px-4 text-uppercase font-weight-light overline">Ajuste > Ventilador</p>
       <v-divider></v-divider>
       <h4 class="my-2 px-4">Configuración actual del ventilador en base a la temperatura</h4>
