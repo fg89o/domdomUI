@@ -3,10 +3,10 @@
   <v-row dark style="background-color: rgb(51,51,51); margin-top: -12px; padding-bottom: 60px">
     <v-col cols="12"
     >
-      <h3 dark style="color: white">CANALES</h3>
+      <h3 dark style="color: white">PROGRAMACIÓN | {{action}}</h3>
     </v-col>
   </v-row>
-  <v-row align="center" justify="center">
+  <v-row align="center" justify="center" >
     <v-col cols="12" md="10" lg="10"
       style="
         padding-top: 0px;
@@ -18,9 +18,9 @@
         border-image-slice: 1;
       "
     >
-      <p class="my-4 px-4 text-uppercase font-weight-light overline">Ajuste > Canales</p>
+      <p class="my-4 px-4 text-uppercase font-weight-light overline">Ajuste > Programación > Editar</p>
       <v-divider></v-divider>
-      <h4 class="my-2 px-4">Ajuste individual de cada canal</h4>
+      <h4 class="my-2 px-4">Editar punto de programación</h4>
       <v-divider></v-divider>
       <div v-if="loading">
         <v-skeleton-loader
@@ -33,63 +33,83 @@
           <canvas id="espectro-chart"></canvas>
         </v-col>
         <v-col cols="12" lg="6">
-          <v-form v-if="!loading" class="mx-4">
-            <v-row align="center">
-              <v-col cols="12" class="d-flex justify-end">
-                <v-btn large text color="primary" v-on:click="request()">Actualizar</v-btn>
-              </v-col>
-              <v-col cols="8">
-                  <v-input
-                      :messages="['Habilitar este modo deshabilitará el modo programado.']"
-                      dense
+          <v-row>
+            <v-col cols="12" md="4">
+              <v-dialog
+              ref="dialog"
+              v-model="modal_time"
+              :return-value.sync="time"
+              persistent
+              width="290px"
+              >
+                <template v-slot:activator="{ on }">
+                    <v-text-field
+                    v-model="time"
+                    label="Hora"
+                    readonly
+                    v-on="on"
+                    ></v-text-field>
+                </template>
+                <v-time-picker
+                    v-if="modal_time"
+                    v-model="time"
+                    full-width
+                >
+                    <v-spacer></v-spacer>
+                    <v-btn text color="primary" @click="modal_time = false">Cancel</v-btn>
+                    <v-btn text color="primary" @click="$refs.dialog.save(time)">OK</v-btn>
+                </v-time-picker>
+              </v-dialog>
+            </v-col>
+            <v-col cols="12" md="7" class="offset-md-1">
+              <v-switch v-model="schedulePoint.fade" label="Progresivo"></v-switch>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" md="6" lg="6" v-for="(canal, i) in canales" :key="i">
+              <v-row>
+                <v-col cols="12" class="d-flex justify-space-between">
+                  <p class="mx-0 my-0" >Canal: {{i+1}}</p>
+                  <span
+                    class=""
+                    v-text="porcentaje[i]+'%'"
+                  ></span>
+                </v-col>
+                <v-col cols="12 py-0">
+                  <v-slider
+                    v-model="porcentaje[i]"
+                    track-color="grey"
+                    min="0"
+                    max="100"
+                    :disabled="!canal.enabled"
+                    @change="updateChart()"
+                    always-dirty
                   >
-                      Habilitar ajuste manual
-                  </v-input>
-              </v-col>
-              <v-col cols="4" class="d-flex justify-end" >
-                  <v-spacer></v-spacer>
-                  <v-switch v-model="modo_manual" flat inset dense @change="send()"></v-switch>
-              </v-col>
-            </v-row>
-            <v-row v-if="modo_manual">
-              <v-col cols="12" sm="6" lg="6" v-for="(canal, i) in canales" :key="i">
-                <v-row>
-                  <v-col cols="12" class="d-flex justify-space-between">
-                    <p class="mx-0 my-0" >Canal: {{i+1}}</p>
-                    <span
-                      class=""
-                      v-text="porcentaje[i] +'%'"
-                    ></span>
-                  </v-col>
-                  <v-col cols="12 py-0">
-                    <v-slider
-                      v-model="porcentaje[i]"
-                      track-color="grey"
-                      min="0"
-                      max="100"
-                      :disabled="!canal.enabled"
-                      @change="send()"
-                      always-dirty
-                    >
-                      <template v-slot:prepend>
-                        <v-icon
-                        >
-                          mdi-minus
-                        </v-icon>
-                      </template>
-              
-                      <template v-slot:append>
-                        <v-icon
-                        >
-                          mdi-plus
-                        </v-icon>
-                      </template>
-                    </v-slider>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-form>
+                    <template v-slot:prepend>
+                      <v-icon
+                      >
+                        mdi-minus
+                      </v-icon>
+                    </template>
+            
+                    <template v-slot:append>
+                      <v-icon
+                      >
+                        mdi-plus
+                      </v-icon>
+                    </template>
+                  </v-slider>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-divider class="py-4"></v-divider>
+          <v-row class="px-3">
+            <v-btn text color="error" class="mx-4" @click="goBack()">Cancelar</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn text color="primary" class="mx-4" @click="sendTest()">Test</v-btn>
+            <v-btn color="primary" @click="save()">Guardar</v-btn>
+          </v-row>
         </v-col>
       </v-row>
     </v-col>
@@ -97,19 +117,94 @@
 </v-container>
 </template>
 <script>
-
 import { simplify, parse } from "mathjs";
 import Chart from "chart.js";
 
 export default {
-  name: 'Adj_Manual',
+  name: 'Adj_Programacion_editar',
+  props: ['json'],
   data: () => ({
-      canales: [],
-      modo_manual: false,
-      loading: true,
-      porcentaje: [],
+    loading: true,
+    canales: [],
+    schedulePoint: {},
+    num_canales: 0,
+    modal_time: false,
+    time: '00:00',
+    porcentaje: [],
+    action: ""
   }),
   methods: {
+    goBack()
+    {
+      this.$router.push({ name: "Programacion"});
+    },
+    save()
+    {
+      for(var i = 0; i < this.num_canales; i++)
+      {
+        this.schedulePoint["canal"+(i+1)] = this.porcentaje[i];
+      }
+      this.schedulePoint["fechaHora"] = this.time;
+
+      var str = JSON.stringify(this.schedulePoint);
+      console.log(str);
+      this.$router.push({ name: "Programacion", params: { modifiedPoint: str }});
+    },
+    sendTest()
+    {
+      var tmpCanales = [];
+      for(var i = 0; i < this.canales.length; i++)
+      {
+        var rango = this.canales[i].max_pwm - this.canales[i].min_pwm;
+        var valor = this.canales[i].min_pwm + (rango * this.porcentaje[i] / 100);
+        this.canales[i].current_pwm = valor;
+
+        this.canales[i].porcentaje = this.porcentaje[i];
+        tmpCanales.push(this.canales[i]);
+      }
+
+      var obj = {
+        canales: tmpCanales
+      }
+
+      this.$http.post(this.$remoteServer + 'test', JSON.stringify(obj), {
+        headers: {"Content-Type": "text/plain"}
+      }).then(function(/* response */)
+      {
+        self.success = true;
+        setTimeout(()=>{
+          self.success = false;
+        }, 5000);
+      }, function(){
+          self.error = true;
+          self.loading = false;
+      });
+    },
+    request()
+    {
+      var self = this;
+      
+      self.porcentaje = [];
+
+      this.$http.get(this.$remoteServer + 'canales').then(function(response)
+      {
+        self.canales = response.body["canales"];
+
+        for (var i = 0; i < self.canales.length; i++)
+        {
+          self.canales[i].porcentaje = self.schedulePoint["canal"+(i+1)];
+          self.porcentaje.push(self.schedulePoint["canal"+(i+1)]);
+        }
+
+        this.updateChart();
+        
+        self.loading = false;
+
+      }, function(){
+          self.error = true;
+          self.loading = false;
+      });
+    },
     createChart(chartId, chartData) {
       const ctx = document.getElementById(chartId);
       new Chart(ctx, {
@@ -150,93 +245,12 @@ export default {
                 stepSize: 1
               },
               scaleLabel: {
-                display: false,
+                display: true,
                 labelString: ""
               }
             }]
           }
         }
-      });
-    },
-    decrement()
-    {
-      this.porcentaje[0]--;
-    },
-    increment()
-    {
-      this.porcentaje[0]++;
-    },
-    send()
-    {
-      var self = this;
-
-      self.success = false;
-      self.error = false;
-
-      var tmpCanales = [];
-      for(var i = 0; i < self.canales.length; i++)
-      {
-
-        if (self.porcentaje[i] != self.canales[i].porcentaje)
-        {
-          var rango = self.canales[i].max_pwm - self.canales[i].min_pwm;
-          var valor = self.canales[i].min_pwm + (rango * self.porcentaje[i] / 100);
-          self.canales[i].current_pwm = valor;
-
-          self.canales[i].porcentaje = self.porcentaje[i];
-          tmpCanales.push(self.canales[i]);
-        }
-      }
-
-      var obj = {
-        modo_programado: !self.modo_manual,
-        canales: tmpCanales
-      }
-
-      this.$http.post(this.$remoteServer + 'canales', JSON.stringify(obj), {
-        headers: {
-            "Content-Type": 'text/plain'
-        }
-      }).then(function(/* response */)
-      {
-        self.success = true;
-        setTimeout(()=>{
-          self.success = false;
-        }, 5000);
-      }, function(){
-          self.error = true;
-          self.loading = false;
-      });
-
-      this.updateChart();
-    },
-    request()
-    {
-      var self = this;
-      
-      this.$http.get(this.$remoteServer + 'canales').then(function(response)
-      {
-        self.modo_manual = !response.body["modo_programado"];
-        self.canales = response.body["canales"];
-        self.porcentaje = [];
-
-        for (var i = 0; i < self.canales.length; i++)
-        {
-          var rango = self.canales[i].max_pwm - self.canales[i].min_pwm;
-          var valor = self.canales[i].current_pwm - self.canales[i].min_pwm;
-
-          self.canales[i].porcentaje = Math.round(valor * 100 / rango);
-
-          self.porcentaje.push(self.canales[i].porcentaje);
-        }
-
-        this.updateChart();
-
-        self.loading = false;
-
-      }, function(){
-          self.error = true;
-          self.loading = false;
       });
     },
     updateChart()
@@ -252,14 +266,14 @@ export default {
           {
             blancos.push({
               temperatura: this.canales[i].leds[j].K,
-              potencia: this.canales[i].leds[j].W * this.canales[i].porcentaje / 100
+              potencia: this.canales[i].leds[j].W * this.porcentaje[i] / 100
             });
           }
           else
           {
             color.push({
               nm: this.canales[i].leds[j].nm,
-              potencia: this.canales[i].leds[j].W * this.canales[i].porcentaje / 100
+              potencia: this.canales[i].leds[j].W * this.porcentaje[i] / 100
             });
           }
         }
@@ -385,6 +399,35 @@ export default {
 		}
   }, 
   created: function(){
+
+    var obj = JSON.parse(this.json);
+    this.num_canales = obj["num_canales"];
+
+    if (obj["schedulePoint"] != undefined)
+    {
+      this.schedulePoint = obj["schedulePoint"];
+      this.time = this.schedulePoint["fechaHora"];
+      this.action = "EDITAR";
+    }
+    else
+    {
+      this.action = "NUEVO";
+
+      this.schedulePoint = {
+        id: 0,
+        fechaHora: "00:00",
+        fade: true
+      };
+
+      for(var i = 0; i < this.num_canales; i++)
+      {
+        this.schedulePoint["canal"+(i+1)] = 0;
+      }
+      this.time = this.schedulePoint["fechaHora"];
+    }
+
+    console.log(this.schedulePoint);
+
     this.request();
   }
 }

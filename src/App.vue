@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <v-app>
-        <v-navigation-drawer v-model="drawer" enable-resize-watcher app>
+        <v-navigation-drawer v-model="drawer" persistent app mobile-break-point="1024">
           <v-list class="text-center d-flex flex-column justify-center">
             <v-list-item-text>
               <h1><span class="blue--text">Dom</span>Dom</h1>
             </v-list-item-text>
             <v-list-item-avatar size="64" class="d-block">
-              <v-img src="https://drive.google.com/file/d/1FeSEeLYX4gRgx4bUL_OrPKrFJBr6ll_I"></v-img>
+              <v-img src=""></v-img>
             </v-list-item-avatar>
             <v-list-item-text>
               <span class="overline">menu principal</span>
@@ -76,7 +76,7 @@ export default {
   name: 'App',
 
   data: () => ({
-    drawer: false,
+    drawer: true,
     date: null, 
     datenow: '',
     appTitle: 'DomDom',
