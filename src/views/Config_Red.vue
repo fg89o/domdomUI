@@ -251,7 +251,6 @@ export default {
             self.success = false;
 
             this.$http.get(this.$remoteServer + 'red').then(function(response){
-                console.log(response.body);
                 self.mDNSEnabled = response.body["mdns_enabled"];
                 self.mDNSHostname = response.body["mdns_hostname"];
                 self.mode = response.body["mode"];
@@ -288,7 +287,7 @@ export default {
                 obj["pwd"] = self.pwd;
             }
 
-            this.$http.post(this.$remoteServer + 'red', obj
+            this.$http.post(this.$remoteServer + 'red', JSON.stringify(obj), { headers: {"Content-Type": "text/plain"}}
             ).then(function(/* response */){ 
                 console.log("Cambios gaurdados correctamente!");
                 self.getInfo();

@@ -147,7 +147,6 @@ export default {
       this.schedulePoint["fechaHora"] = this.time;
 
       var str = JSON.stringify(this.schedulePoint);
-      console.log(str);
       this.$router.push({ name: "Programacion", params: { modifiedPoint: str }});
     },
     sendTest()
@@ -425,8 +424,6 @@ export default {
       }
       this.time = this.schedulePoint["fechaHora"];
     }
-
-    console.log(this.schedulePoint);
 
     this.request();
   }

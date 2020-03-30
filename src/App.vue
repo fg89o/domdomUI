@@ -1,21 +1,21 @@
 <template>
   <div id="app">
     <v-app>
-        <v-navigation-drawer v-model="drawer" persistent app mobile-break-point="1024">
+        <v-navigation-drawer v-model="drawer" app mobile-break-point="1024">
           <v-list class="text-center d-flex flex-column justify-center">
-            <v-list-item-text>
-              <h1><span class="blue--text">Dom</span>Dom</h1>
-            </v-list-item-text>
-            <v-list-item-avatar size="64" class="d-block">
-              <v-img src=""></v-img>
-            </v-list-item-avatar>
-            <v-list-item-text>
-              <span class="overline">menu principal</span>
-            </v-list-item-text>
+            <v-list-item-content>
+              <v-list-item-title class="title">
+                <h1><span class="blue--text">Dom</span>Dom</h1>
+              </v-list-item-title>
+              <v-list-item-avatar size="64" class="d-block">
+                <v-img src=""></v-img>
+              </v-list-item-avatar>
+              <v-list-item-subtitle>
+                menú principal
+              </v-list-item-subtitle>
+            </v-list-item-content>
           </v-list>
-  
           <v-divider></v-divider>
-  
           <v-list nav dense >
             <v-list-item-group v-model="menu_items_active" color="primary">
             <div
@@ -112,11 +112,11 @@ export default {
             var self = this
             this.date.setSeconds(this.date.getSeconds() + 1);
 
-            var day = this.date.getDate().toString().padStart(2,"0");
-            var month = (this.date.getMonth()+1).toString().padStart(2,"0");
-            var year = this.date.getFullYear().toString();
-            var hour = this.date.getHours().toString().padStart(2,"0");
-            var minute = this.date.getMinutes().toString().padStart(2,"0");
+            var day = this.date.getUTCDate().toString().padStart(2,"0");
+            var month = (this.date.getUTCMonth()+1).toString().padStart(2,"0");
+            var year = this.date.getUTCFullYear().toString();
+            var hour = this.date.getUTCHours().toString().padStart(2,"0");
+            var minute = this.date.getUTCMinutes().toString().padStart(2,"0");
 
             this.datenow = day + "/" + month + "/" + year + " " + hour + ":" + minute;
         }
@@ -127,7 +127,8 @@ export default {
     requestTime(){
       var self = this;
       this.$http.get(this.$remoteServer + 'rtc').then(function(response){
-          self.date = new Date(parseInt(response.body["unixtime"])*1000);
+          console.log(response.body);
+          self.date = new Date((parseInt(response.body["unixtime"]) /*- parseInt(response.body["timezoneOffset"]) */)*1000);
 
           if (self.timeTimeout != null)
           {

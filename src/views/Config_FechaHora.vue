@@ -223,7 +223,7 @@ export default {
             }
             
             var self = this;
-            this.$http.post(this.$remoteServer + 'rtc', obj
+            this.$http.post(this.$remoteServer + 'rtc', JSON.stringify(obj), { headers: {"Content-Type": "text/plain"}}
             ).then(function(/* response */){ 
                 console.log("Fecha cambiada correctamente!");
                 self.requestInfo();

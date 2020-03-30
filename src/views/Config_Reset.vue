@@ -72,7 +72,8 @@ export default {
         var obj = {
           reset: true
         }
-        this.$http.post(this.$remoteServer + 'reset', obj).then(function(/* response */){
+        this.$http.post(this.$remoteServer + 'reset', JSON.stringify(obj), { headers: {"Content-Type": "text/plain"}})
+        .then(function(/* response */){
           self.success = true;
         }, function(){
             self.error = true;

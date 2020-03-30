@@ -237,7 +237,7 @@ export default {
           canales: self.canales
         }
 
-        this.$http.post(this.$remoteServer + 'canales', obj).then(function(/* response */){
+        this.$http.post(this.$remoteServer + 'canales', JSON.stringify(obj),{ headers: {"Content-Type": "text/plain"}}).then(function(/* response */){
           self.success = true;
         }, function(){
             self.error = true;

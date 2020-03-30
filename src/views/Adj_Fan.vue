@@ -302,7 +302,7 @@ export default {
         }
       }
 
-      this.$http.post(this.$remoteServer + 'fansettings', obj).then(function( /* response */)
+      this.$http.post(this.$remoteServer + 'fansettings', JSON.stringify(obj), { headers: {"Content-Type": "text/plain"}}).then(function( /* response */)
       {
         self.request();
       }, function(){

@@ -49,7 +49,7 @@ const routes = [
     component : () => import(/* webpackChunkName: "adj" */ '../views/Adj_Fan.vue')
   },
   {
-    path: '/programacion/:schedulePoint?',
+    path: '/programacion/:modifiedPoint?',
     name: 'Programacion',
     component : () => import(/* webpackChunkName: "adj" */ '../views/Adj_Programacion.vue'),
     props: true
