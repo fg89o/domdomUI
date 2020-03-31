@@ -7,27 +7,128 @@
     </v-col>
   </v-row>
   <v-row align="center" justify="center">
-    <v-col cols="12" sm="10" lg="10"
+    <v-col cols="12" md="10" >
+      <v-row 
+          align="start"
+          justify="space-between">
+        <v-col cols="12" md="3"
+          style="
+            padding-top: 0px;
+            margin-top: -50px;
+            background-color: white;
+            border-radius: 5px;
+            border: 1px solid #aaa;
+            margin-bottom: 50px;
+          "
+        >
+        <v-row>
+          <v-col cols="6">
+            <v-icon class="display-4">mdi-fan</v-icon>
+          </v-col>
+          <v-col cols="6" class="d-flex flex-column px-4">
+            <span class="subheading font-weight-light mr-1">Velocidad:</span>
+            <span
+              class="display-2 font-weight-bold"
+              v-text="velocidad_fan"
+            ></span>
+            <span
+              class="subheading font-weight-light"
+              v-text="voltaje_fan"
+            ></span>
+          </v-col>
+        </v-row>
+        </v-col>
+        <v-col cols="12" md="3"
+          style="
+            padding-top: 0px;
+            margin-top: -50px;
+            background-color: white;
+            border-radius: 5px;
+            border: 1px solid #aaa;
+            margin-bottom: 50px;
+          "
+        >
+        <v-row>
+          <v-col cols="6">
+            <v-icon class="display-4">mdi-coolant-temperature</v-icon>
+          </v-col>
+          <v-col cols="6" class="d-flex flex-column">
+            <span class="subheading font-weight-light mr-1">Teperatura:</span>
+            <span
+              class="display-1 font-weight-bold"
+              v-text="temperatura"
+            ></span>
+            <span
+              class="subheading font-weight-light"
+            ></span>
+          </v-col>
+        </v-row>
+        </v-col>
+        <v-col cols="12" md="3" class="d-fex flex-row"
+          style="
+            padding-top: 0px;
+            margin-top: -50px;
+            background-color: white;
+            border-radius: 5px;
+            border: 1px solid #aaa;
+            margin-bottom: 50px;
+          "
+        >
+        <v-row>
+          <v-col cols="6">
+            <v-icon class="display-4">mdi-wifi</v-icon>
+          </v-col>
+          <v-col cols="6" class="d-flex flex-column">
+            <span class="subheading font-weight-light mr-1">Modo:</span>
+            <span
+              class="display-2 font-weight-bold"
+              v-text="modo_wifi"
+            ></span>
+            <span
+              class="subheading font-weight-light"
+              v-text="potencia_wifi"
+            ></span>
+          </v-col>
+        </v-row>
+        </v-col>
+      </v-row>
+  </v-col>
+  </v-row>
+  <v-row align="center" justify="center">
+    <v-col cols="12" md="10" lg="10"
       style="
         padding-top: 0px;
         margin-top: -50px;
         background-color: white;
         border-radius: 5px;
-        border: 1px solid transparent;
-        border-image: linear-gradient(to bottom, rgb(51,51,51) 0%, rgba(255,255,255,0) 50%);
-        border-image-slice: 1;
+        border: 1px solid #aaa;
+        margin-bottom: 50px;
       "
     >
       <v-row>
         <v-col cols="12" md="8">
           <canvas id="canales-chart"></canvas>
         </v-col>
-        <v-col cols="12" md="4">
-
+        <v-col cols="12" md="4" class="d-flex justify-space-around flex-column">
+          <div class="d-flex flex-column">
+            <span class="subheading font-weight-light mr-1">Modo:</span>
+            <span
+              class="title font-weight-bold"
+              v-text="modo"
+            ></span>
+          </div>
+          <div class="d-flex flex-column">
+            <span class="subheading font-weight-light mr-1">Siguiente cambio:</span>
+            <span
+                class="display-2 font-weight-light py-4"
+                v-text="siguiente_hora"
+            ></span>
+          </div>
         </v-col>
       </v-row>
     </v-col>
   </v-row>
+  
 </v-container>
 </template>
 
@@ -35,6 +136,16 @@
 import Chart from 'chart.js';
 export default {
   name: 'Home',
+  data: () => ({
+    modo: "",
+    siguiente_hora: "",
+    velocidad_fan: "25%",
+    voltaje_fan: "10.25V",
+    modo_wifi: "",
+    potencia_wifi: "",
+    temperatura: "",
+    interval:null,
+  }),
   methods: {
     createChart(chartId, chartData) {
       const ctx = document.getElementById(chartId);
@@ -76,12 +187,28 @@ export default {
         }
       });
     },
-    request()
+    requestCanales()
     {
       var self = this;
 
       this.$http.get(this.$remoteServer + 'canales').then(function(response){
-        this.fillChartData( response.body["canales"] );
+        self.modo = response.body["modo_programado"] ? "Auto" : "Manual";
+        self.siguiente_hora = response.body["modo_programado"] 
+          ? response.body["siguiente_punto_hora"].toString().padStart(2,"0") + ":" + response.body["siguiente_punto_minuto"].toString().padStart(2,"0")
+          : "__:__";
+        self.fillChartData( response.body["canales"] );
+      }, function(){
+          self.error = true;
+      });
+    },
+    requestFan()
+    {
+      var self = this;
+      this.$http.get(this.$remoteServer + 'fansettings').then(function(response)
+      {
+        self.temperatura = response.body["curr_temp"] + "ºC";
+        self.potencia_fan = Math.round(response.body["curr_pwm"] * 100 / 1024 ) + "%";
+        self.voltaje_fan = parseFloat(response.body["fan_voltaje"]).toFixed(2) + "V";
       }, function(){
           self.error = true;
       });
@@ -109,10 +236,32 @@ export default {
       }
 
       this.createChart("canales-chart", obj)
+    },
+    requestNetwork()
+    {
+        var self = this;
+
+        this.$http.get(this.$remoteServer + 'red').then(function(response){
+            self.modo_wifi = response.body["mode"];
+            self.potencia_wifi = response.body["rssi"] + "dbm"; 
+        }, function(){
+
+            self.error = true;
+        });
+    },
+    initialize()
+    {
+      this.requestCanales();
+      this.requestFan();
+      this.requestNetwork();
     }
   },
   created(){
-    this.request();
+    this.initialize();
+
+    setInterval(() => {
+      this.initialize();
+    }, 60000);
   }
 }
 </script>
