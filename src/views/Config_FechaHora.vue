@@ -44,121 +44,119 @@
             >
             Error al guardar los datos. No se recibió respuesta.
             </v-alert>
-            <v-card outlined class="my-4">
-                <v-toolbar flat color="blue lighten-5">
-                    <v-toolbar-title>Configuracion de fecha y hora</v-toolbar-title>
+            <v-row>
+                <v-col cols="12">
+                    <v-text-field
+                        readonly
+                        v-model="datenow"
+                        label="Fecha y hora actual"
+                        required
+                        filled
+                    ></v-text-field>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="8">
+                    <v-input
+                        :messages="['Comprueba la fecha y hora actual contra un servicio ntp de internet']"
+                    >
+                        Habilitar el servicio NTP
+                    </v-input>
+                </v-col>
+                <v-col cols="4" class="d-flex justify-end" >
+                    <v-switch v-model="ntpEnabled" flat inset></v-switch>
+                </v-col>
+            </v-row>
+            <v-row v-bind:class="{ 'd-none': !ntpEnabled }">
+                <v-col cols="12">
+                    <v-text-field
+                        v-model="ntpServername"
+                        :counter="30"
+                        label="Servidor NTP"
+                        hint = "Por defecto: pool.ntp.org"
+                        persistent-hint
+                        required
+                    ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                    <v-autocomplete
+                        v-model="timezone"
+                        hint="Zona horaria para controlar la hora y el horario de verano/invierno"
+                        :items="selectOptions"
+                        :search-input.sync="search"
+                        color="white"
+                        hide-no-data
+                        label="Zonas horarias"
+                        placeholder="empiece a escribir para buscar"
+                        return-object
+                    ></v-autocomplete>
+                </v-col>
+            </v-row>
+            <v-row v-bind:class="{ 'd-none': ntpEnabled }">
+                <v-col cols="12">
+                    <v-menu
+                    v-model="menu2"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                    >
+                        <template v-slot:activator="{ on }">
+                            <v-text-field
+                            v-model="newDate"
+                            label="Nueva fecha"
+                            readonly
+                            v-on="on"
+                            ></v-text-field>
+                        </template>
+                        <v-date-picker v-model="newDate" @input="menu2 = false"></v-date-picker>
+                    </v-menu>
+                </v-col>
+                <v-col cols="12">
+                    <v-dialog
+                    ref="dialog"
+                    v-model="modal2"
+                    :return-value.sync="time"
+                    persistent
+                    width="290px"
+                    >
+                    <template v-slot:activator="{ on }">
+                        <v-text-field
+                        v-model="time"
+                        label="Nueva Hora"
+                        readonly
+                        v-on="on"
+                        ></v-text-field>
+                    </template>
+                    <v-time-picker
+                        v-if="modal2"
+                        v-model="time"
+                        full-width
+                    >
+                        <v-spacer></v-spacer>
+                        <v-btn text color="primary" @click="modal2 = false">Cancel</v-btn>
+                        <v-btn text color="primary" @click="$refs.dialog.save(time)">OK</v-btn>
+                    </v-time-picker>
+                    </v-dialog>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-divider class="py-2"></v-divider>
                     <v-spacer></v-spacer>
-                </v-toolbar>
-                <v-divider></v-divider>
-                <v-card-text>
-                    <v-form>
-                        <v-row>
-                            <v-col cols="12">
-                                <v-text-field
-                                    readonly
-                                    v-model="datenow"
-                                    label="Fecha y hora actual"
-                                    required
-                                    filled
-                                ></v-text-field>
-                            </v-col>
-                        </v-row>
-                        <v-row align="center">
-                            <v-col cols="8">
-                                <v-input
-                                    :messages="['Comprueba la fecha y hora actual contra un servicio ntp de internet']"
-                                >
-                                    Habilitar el servicio NTP
-                                </v-input>
-                            </v-col>
-                            <v-col cols="4" class="d-flex justify-end" >
-                                <v-switch v-model="ntpEnabled" flat inset></v-switch>
-                            </v-col>
-                        </v-row>
-                        <v-row v-bind:class="{ 'd-none': !ntpEnabled }">
-                            <v-col cols="12">
-                                <v-text-field
-                                    v-model="ntpServername"
-                                    :counter="30"
-                                    label="Servidor NTP"
-                                    hint = "Por defecto: pool.ntp.org"
-                                    persistent-hint
-                                    required
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="12">
-                                <v-text-field
-                                    v-model="timezoneSeconds"
-                                    label="Diferencia horaria"
-                                    hint = "Diferencia horario expresada en segundos. Por ejemplo, GMT+1 es 3600"
-                                    persistent-hint
-                                    required
-                                ></v-text-field>
-                            </v-col>
-                        </v-row>
-                        <v-row v-bind:class="{ 'd-none': ntpEnabled }">
-                            <v-col cols="12">
-                                <v-menu
-                                v-model="menu2"
-                                :close-on-content-click="false"
-                                :nudge-right="40"
-                                transition="scale-transition"
-                                offset-y
-                                min-width="290px"
-                                >
-                                    <template v-slot:activator="{ on }">
-                                        <v-text-field
-                                        v-model="newDate"
-                                        label="Nueva fecha"
-                                        readonly
-                                        v-on="on"
-                                        ></v-text-field>
-                                    </template>
-                                    <v-date-picker v-model="newDate" @input="menu2 = false"></v-date-picker>
-                                </v-menu>
-                            </v-col>
-                            <v-col cols="12">
-                                <v-dialog
-                                ref="dialog"
-                                v-model="modal2"
-                                :return-value.sync="time"
-                                persistent
-                                width="290px"
-                                >
-                                <template v-slot:activator="{ on }">
-                                    <v-text-field
-                                    v-model="time"
-                                    label="Nueva Hora"
-                                    readonly
-                                    v-on="on"
-                                    ></v-text-field>
-                                </template>
-                                <v-time-picker
-                                    v-if="modal2"
-                                    v-model="time"
-                                    full-width
-                                >
-                                    <v-spacer></v-spacer>
-                                    <v-btn text color="primary" @click="modal2 = false">Cancel</v-btn>
-                                    <v-btn text color="primary" @click="$refs.dialog.save(time)">OK</v-btn>
-                                </v-time-picker>
-                                </v-dialog>
-                            </v-col>
-                        </v-row>
-                    </v-form>
-                </v-card-text>
-                <v-divider></v-divider>
-                <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn large color="primary" v-on:click="save()">Guardar</v-btn>
-                </v-card-actions>
-            </v-card>
+                    <v-btn large color="primary" v-on:click="save()">Guardar</v-btn>
+                </v-col>
+            </v-row>
         </v-col>
     </v-row>
 </v-container>
 </template>
 
 <script>
+
+import Zones from "../plugins/zones";
+
 export default {
   name: 'Config_FechaHora',
   data: () => ({
@@ -171,10 +169,12 @@ export default {
         time: '', //new Date().getHours().toString().padStart(2,"0") + ":"+new Date().getMinutes().toString().padStart(2,"0"),
         timeoutTime: null,
         ntpEnabled: true,
-        timezoneSeconds: 3600,
+        timezone: "",
         success: false,
         error: false,
         ntpServername: '',
+        selectOptions: [],
+        search: ""
     }),
     methods: {
         updateTime() {
@@ -205,7 +205,8 @@ export default {
                 obj = {
                     enabled: true,
                     servername: this.ntpServername,
-                    timezoneOffset: this.timezoneSeconds
+                    timezone: this.timezone,
+                    timezonePosix: Zones[this.timezone]
                 };
             }
             else
@@ -218,7 +219,9 @@ export default {
                 
                 obj = {
                     enabled: false,
-                    unixtime: unixtime / 1000
+                    unixtime: unixtime / 1000,
+                    timezone: this.timezone,
+                    timezonePosix: Zones[this.timezone]
                 }
             }
             
@@ -241,9 +244,8 @@ export default {
             self.success = false;
 
             this.$http.get(this.$remoteServer + 'rtc').then(function(response){
-                console.log(response.body);
                 self.ntpEnabled = response.body["enabled"];
-                self.timezoneSeconds = response.body["timezoneOffset"];
+                self.timezone = response.body["timezone"];
                 self.ntpServername = response.body["servername"];
                 self.rtcDate = new Date(parseInt(response.body["unixtime"]) * 1000);
                 self.updateTime();
@@ -253,6 +255,18 @@ export default {
         },
     },
     created: function(){
+        
+        var json = Zones;
+
+        // Obteniendo todas las claves del JSON
+        for (var clave in json){
+            // Controlando que json realmente tenga esa propiedad
+            if (Object.prototype.hasOwnProperty.call(json, clave)) {
+                // Mostrando en pantalla la clave junto a su valor
+                this.selectOptions.push(clave);
+            }
+        }
+
         this.requestInfo();
     }
 }

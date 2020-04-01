@@ -44,7 +44,7 @@
         </v-navigation-drawer>
         <v-app-bar app color="rgb(51,51,51)" dense dark flat >
             <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-
+            
             <v-spacer></v-spacer>
     
             <v-btn icon target="_blank" href="https://github.com/fg89o/domdomUI">
@@ -127,8 +127,7 @@ export default {
     requestTime(){
       var self = this;
       this.$http.get(this.$remoteServer + 'rtc').then(function(response){
-          console.log(response.body);
-          self.date = new Date((parseInt(response.body["unixtime"]) /*- parseInt(response.body["timezoneOffset"]) */)*1000);
+          self.date = new Date(parseInt(response.body["unixtime"])*1000);
 
           if (self.timeTimeout != null)
           {

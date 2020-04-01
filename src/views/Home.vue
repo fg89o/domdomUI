@@ -259,9 +259,12 @@ export default {
   created(){
     this.initialize();
 
-    setInterval(() => {
+    this.interval = setInterval(() => {
       this.initialize();
     }, 60000);
+  },
+  beforeDestroy() {
+    clearInterval(this.interval);
   }
 }
 </script>
